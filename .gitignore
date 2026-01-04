@@ -17,3 +17,7 @@ venv/
 *.db
 *.sqlite
 *.sqlite3
+
+# Celery beat & logs
+celerybeat-schedule
+*.log
