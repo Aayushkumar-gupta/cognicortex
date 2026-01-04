@@ -62,3 +62,23 @@ def update_task(
     db.refresh(task_to_update)
 
     return task_to_update
+
+@router.delete("/delete/{task_id}", response_model=ReadTask)
+def delete_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    task_to_delete = db.query(Task).filter(
+        Task.owner_id == current_user.id,
+        Task.id == task_id
+    ).first()
+
+    if not task_to_delete:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    db.delete(task_to_delete)
+    db.commit()
+
+    return task_to_delete
+    

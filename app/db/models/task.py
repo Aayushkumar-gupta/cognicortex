@@ -7,9 +7,9 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    description = Column(String)
+    description = Column(String)  
     status = Column(String, default='pending')
-    owner_id = Column(Integer, nullable=False)
+    owner_id = Column(String, nullable=False)
 
-    created_at = Column(DateTime, default=DateTime.utcnow)
-    updated_at = Column(DateTime, default=DateTime.utcnow, onupdate=DateTime.utcnow)
+    created_at = Column(DateTime, default=func.now)
+    updated_at = Column(DateTime, default=func.now, onupdate=func.now)
