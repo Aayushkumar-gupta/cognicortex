@@ -24,7 +24,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         algorithm=settings.ALGORITHM
     )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")  # login endpoint
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")  
 
 def get_current_user(
     token: str = Depends(oauth2_scheme), 

@@ -12,3 +12,8 @@ venv/
 
 # System files
 .DS_Store
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
