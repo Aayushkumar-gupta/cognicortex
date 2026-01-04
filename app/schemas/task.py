@@ -10,6 +10,7 @@ class CreateTask(BaseModel):
 class ReadTask(BaseModel):
     id: int
     name: str
+    description: str
     status: str
     created_at: datetime
     updated_at: datetime

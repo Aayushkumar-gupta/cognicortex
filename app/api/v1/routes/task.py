@@ -5,6 +5,8 @@ from app.schemas.task import CreateTask, ReadTask, UpdateTask
 from app.db.models.user import User
 from app.db.models.task import Task
 from app.core.security.jwt import get_current_user
+from datetime import datetime
+from typing import List
 
 router = APIRouter(prefix="/task", tags=["task"])
 
@@ -14,11 +16,14 @@ def create_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    now = datetime.utcnow()
     new_task = Task(
         name = task.name,
         description = task.description,
         owner_id = current_user.id,
-        status = "pending"
+        status = "pending",
+        created_at=now,
+        updated_at=now
     )
 
     db.add(new_task)
@@ -28,7 +33,7 @@ def create_task(
     return new_task
 
 
-@router.get("/getTask", response_model=ReadTask)
+@router.get("/getTask", response_model=List[ReadTask])
 def list_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
