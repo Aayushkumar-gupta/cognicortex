@@ -1,9 +1,20 @@
 from app.workers.celery_app import celery_app
 import time
 
-@celery_app.task(name="task_process_example")
-def process_task(task_id: int):
-    print(f"Starting background processing for task {task_id}")
-    time.sleep(5)
-    print(f"Task {task_id} finished procesing")
-    return {"task_id": task_id, "status": "done"}
+@celery_app.task(name="task_process_one")
+def task_process_one(*args, **kwargs):
+    print("Task 1 started")
+    time.sleep(2)
+    print("Task 1 finished")
+
+@celery_app.task(name="task_process_two")
+def task_process_two(*args, **kwargs):
+    print("Task 2 started")
+    import time; time.sleep(2)
+    print("Task 2 finished")
+
+@celery_app.task(name="task_process_three")
+def task_process_three(*args, **kwargs):
+    print("Task 3 started")
+    time.sleep(2)
+    print("Task 3 finished")

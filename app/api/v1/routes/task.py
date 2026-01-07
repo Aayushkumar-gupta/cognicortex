@@ -7,7 +7,6 @@ from app.db.models.task import Task
 from app.core.security.jwt import get_current_user
 from datetime import datetime
 from typing import List
-from app.workers.tasks import process_task
 
 router = APIRouter(prefix="/task", tags=["task"])
 
@@ -30,8 +29,6 @@ def create_task(
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
-
-    process_task.delay(new_task.id)
 
     return new_task
 

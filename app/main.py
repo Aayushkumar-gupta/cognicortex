@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from app.api.v1.routes.user import router as user_router
 from app.api.v1.routes.auth import router as auth_router
 from app.api.v1.routes.task import router as task_router
+from app.api.v1.routes.workflow import router as workflow_router
 
 
 
@@ -28,6 +29,7 @@ app.include_router(health_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(task_router, prefix="/api/v1")
+app.include_router(workflow_router, prefix="/api/v1")
 
 
 @app.get("/")
