@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import datetime
-from app.db.session import Base
 from app.db.session import get_db
 from app.db.models.workflow import Workflow
 from app.workflows.models import WorkflowStep
-from app.workflows.schemas import WorkflowBase, WorkflowCreate, WorkflowResponse
+from app.workflows.schemas import WorkflowCreate, WorkflowResponse, WorkflowUpdate
 from app.core.security.jwt import get_current_user
 from app.db.models.user import User
 
@@ -41,3 +39,64 @@ def create_workflow(workflow: WorkflowCreate,
 
 
     return new_workflow
+
+@router.get("/list_workflow", response_model=list[WorkflowResponse])
+def list_workflow(db: Session = Depends(get_db),
+    current_user: Session = Depends(get_current_user)
+):
+    workflow_list = db.query(Workflow).filter(Workflow.owner_id == current_user.id).all()
+
+    return workflow_list 
+
+@router.get("/get_workflow/{workflow_id}", response_model=WorkflowResponse)
+def get_workflow(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    workflow = db.query(Workflow).filter(Workflow.owner_id == current_user.id, 
+    Workflow.id == workflow_id).first()
+
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    return workflow
+
+@router.put("/update_workflow", response_model=WorkflowResponse)
+def update_workflow(
+    workflow_id: int,
+    workflow: WorkflowUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    workflow_to_update = db.query(Workflow).filter(Workflow.owner_id == current_user.id, Workflow.id == workflow_id).first()
+
+    if not workflow_to_update:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    if workflow.name is not None:
+        workflow_to_update.name = workflow.name
+    if workflow.description is not None:
+        workflow_to_update.description = workflow.description
+    
+    db.commit()
+    db.refresh(workflow_to_update)
+    
+    return workflow_to_update
+
+
+@router.delete("/delete_workflow/{workflow_id}", response_model=WorkflowResponse)
+def delete_workflow(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    workflow = db.query(Workflow).filter(Workflow.owner_id == current_user.id, Workflow.id == workflow_id).first()
+
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    db.delete(workflow)
+    db.commit()
+
+    return workflow

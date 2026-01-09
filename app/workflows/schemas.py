@@ -29,3 +29,8 @@ class WorkflowResponse(WorkflowBase):
 
     class Config:
         orm_mode = True
+
+class WorkflowUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    steps: Optional[List[WorkflowStepBase]] = None
