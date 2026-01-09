@@ -8,7 +8,7 @@ class WorkflowStepBase(BaseModel):
     next_steps: Optional[List[int]] = None
 
 class WorkflowStepCreate(WorkflowStepBase):
-    workflow_id: int
+    pass
 
 class WorkflowStepResponse(WorkflowStepBase):
     id: int
@@ -21,7 +21,7 @@ class WorkflowBase(BaseModel):
     description: Optional[str] = None
 
 class WorkflowCreate(WorkflowBase):
-    pass
+    steps: Optional[List[WorkflowStepCreate]] = []
 
 class WorkflowResponse(WorkflowBase):
     id: int
