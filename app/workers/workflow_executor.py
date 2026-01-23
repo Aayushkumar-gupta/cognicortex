@@ -5,6 +5,11 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from celery import chain
+from app.engine.engine import run_workflow_engine
+from app.db.models.workflow import Workflow
+from app.db.models.task_run import TaskRun
+from app.workflows.models import WorkflowStep
+
 
 @celery_app.task(name="mark_workflow_finished")
 def mark_workflow_finished(workflow_run_id: int):
@@ -20,32 +25,50 @@ def mark_workflow_finished(workflow_run_id: int):
     db.commit()
 
 @celery_app.task(name="execute_workflow")
-def execute_workflow(workflow_name: str):
-    tasks = WORKFLOW.get(workflow_name)
-
-    if not tasks:
-        raise ValueError("Workflow not found")
-    
+def execute_workflow(workflow_id: int):
     db: Session = next(get_db())
-    
-    new_workflow = WorkflowRun(
-        workflow_name = workflow_name,
-        status = "pending",
-        started_at = datetime.utcnow()
+
+    workflow = db.query(Workflow).get(workflow_id)
+    if not workflow:
+        raise ValueError("Workflow not found")
+
+    workflow_run = WorkflowRun(
+        workflow_id=workflow.id,
+        workflow_name=workflow.name,
+        status="RUNNING",
+        started_at=datetime.utcnow()
     )
 
-    db.add(new_workflow)
+    db.add(workflow_run)
     db.commit()
-    db.refresh(new_workflow)
+    db.refresh(workflow_run)
 
-    workflow_run_id = new_workflow.id
+    run_workflow_engine(db, workflow_run.id)
 
-    chain_tasks = []
+@celery_app.task(name="execute_step")
+def execute_step(task_run_id: int):
+    db: Session = next(get_db())
 
-    for task_name in tasks:
-        chain_tasks.append(celery_app.signature(task_name, kwargs={"workflow_run_id": workflow_run_id}))
+    task_run = db.query(TaskRun).get(task_run_id)
+    step = task_run.workflow_step
 
+    try:
+        execute_step_logic(step)
+        task_run.status = "SUCCESS"
+    except Exception:
+        task_run.status = "FAILED"
 
+    db.commit()
 
-    workflow_chain = chain(*chain_tasks) | mark_workflow_finished.si(workflow_run_id)
-    workflow_chain.apply_async()
+    run_workflow_engine(db, task_run.workflow_run_id)
+
+def execute_step_logic(step):
+    step_type = step.step_type
+
+    if step_type == "action":
+        return True
+
+    if step_type == "trigger":
+        return True
+
+    return True

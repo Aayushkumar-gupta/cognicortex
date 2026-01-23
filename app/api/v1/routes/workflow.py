@@ -10,8 +10,8 @@ from app.db.session import get_db
 router = APIRouter(prefix="/workflow", tags=['workflow'])
 
 @router.post("/workflow")
-def run_workflow(workflow_name: str):
-    execute_workflow.delay(workflow_name)
+def run_workflow(workflow_id: int):
+    execute_workflow.delay(workflow_id)
     return {"status": "workflow started"}
 
 @router.get("/list")
