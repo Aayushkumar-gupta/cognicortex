@@ -12,4 +12,5 @@ class Workflow(Base):
     owner_id = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    steps = relationship("WorkflowStep", backref="workflow", cascade="all, delete-orphan")
+    steps = relationship("WorkflowStep", back_populates="workflow", cascade="all, delete-orphan")
+    workflow_runs = relationship("WorkflowRun", back_populates="workflow", cascade="all, delete-orphan")

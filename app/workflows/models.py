@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, JSON, ForeignKey
 from sqlalchemy.sql import func
 from app.db.session import Base
+from sqlalchemy.orm import relationship
 
 class WorkflowStep(Base):
     __tablename__ = "workflow_steps"
@@ -12,3 +13,4 @@ class WorkflowStep(Base):
     config = Column(JSON, nullable=False)
     next_steps = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    workflow = relationship("Workflow", back_populates="steps")
