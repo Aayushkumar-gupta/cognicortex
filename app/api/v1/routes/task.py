@@ -8,9 +8,9 @@ from app.core.security.jwt import get_current_user
 from datetime import datetime
 from typing import List
 
-router = APIRouter(prefix="/task", tags=["task"])
+router = APIRouter(prefix="/tasks", tags=["tasks"])
 
-@router.post("/createTask", response_model=ReadTask)
+@router.post("", response_model=ReadTask)
 def create_task(
     task: CreateTask,
     db: Session = Depends(get_db),
@@ -33,7 +33,7 @@ def create_task(
     return new_task
 
 
-@router.get("/getTask", response_model=List[ReadTask])
+@router.get("", response_model=List[ReadTask])
 def list_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -42,7 +42,7 @@ def list_task(
     return tasks
 
 
-@router.put("/updateTask/{task_id}", response_model=ReadTask)
+@router.put("/{task_id}", response_model=ReadTask)
 def update_task(
     task_id: int,
     task: UpdateTask,
@@ -68,7 +68,7 @@ def update_task(
 
     return task_to_update
 
-@router.delete("/delete/{task_id}", response_model=ReadTask)
+@router.delete("/{task_id}", response_model=ReadTask)
 def delete_task(
     task_id: int,
     db: Session = Depends(get_db),

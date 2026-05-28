@@ -7,27 +7,15 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.db.session import get_db
 
-router = APIRouter(prefix="/workflow", tags=['workflow'])
+router = APIRouter(prefix="/workflow_runs", tags=['workflow_runs'])
 
-@router.post("/workflow")
+@router.post("")
 def run_workflow(workflow_id: int):
     execute_workflow.delay(workflow_id)
     return {"status": "workflow started"}
 
-@router.get("/list")
-def list_workflows():
 
-    workflows = []
-
-    for workflow_name, tasks in WORKFLOW.items():
-        workflows.append({
-            "workflow_name": workflow_name,
-            "tasks": tasks
-        })
-    
-    return {"workflows": workflows}
-
-@router.get("/monitor")
+@router.get("")
 def monitor_workflows(db: Session = Depends(get_db)):
 
     workflow_runs = db.query(WorkflowRun).all()

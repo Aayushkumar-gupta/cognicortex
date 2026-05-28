@@ -8,9 +8,9 @@ from app.core.security.jwt import get_current_user
 from app.db.models.user import User
 
 
-router = APIRouter(prefix="/workflow_crud", tags=["workflow_crud"])
+router = APIRouter(prefix="/workflows", tags=["workflows"])
 
-@router.post("/create_workflow", response_model=WorkflowResponse)
+@router.post("", response_model=WorkflowResponse)
 def create_workflow(workflow: WorkflowCreate, 
     db: Session = Depends(get_db), 
     currentuser: User = Depends(get_current_user)):
@@ -40,7 +40,7 @@ def create_workflow(workflow: WorkflowCreate,
 
     return new_workflow
 
-@router.get("/list_workflow", response_model=list[WorkflowResponse])
+@router.get("", response_model=list[WorkflowResponse])
 def list_workflow(db: Session = Depends(get_db),
     current_user: Session = Depends(get_current_user)
 ):
@@ -48,7 +48,7 @@ def list_workflow(db: Session = Depends(get_db),
 
     return workflow_list 
 
-@router.get("/get_workflow/{workflow_id}", response_model=WorkflowResponse)
+@router.get("/{workflow_id}", response_model=WorkflowResponse)
 def get_workflow(
     workflow_id: int,
     db: Session = Depends(get_db),
@@ -62,7 +62,7 @@ def get_workflow(
 
     return workflow
 
-@router.put("/update_workflow", response_model=WorkflowResponse)
+@router.put("/{workflow_id}", response_model=WorkflowResponse)
 def update_workflow(
     workflow_id: int,
     workflow: WorkflowUpdate,
@@ -85,7 +85,7 @@ def update_workflow(
     return workflow_to_update
 
 
-@router.delete("/delete_workflow/{workflow_id}", response_model=WorkflowResponse)
+@router.delete("/{workflow_id}", response_model=WorkflowResponse)
 def delete_workflow(
     workflow_id: int,
     db: Session = Depends(get_db),
