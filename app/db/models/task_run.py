@@ -13,3 +13,6 @@ class TaskRun(Base):
     started_at = Column(DateTime)
     finished_at = Column(DateTime)
     workflow_run = relationship("WorkflowRun", back_populates="task_runs")
+    workflow_step = relationship("WorkflowStep")
+    workflow_run_id = Column(Integer, ForeignKey("workflow_runs.id", ondelete="CASCADE"), nullable=False)
+    workflow_step_id = Column(Integer, ForeignKey("workflow_steps.id", ondelete="CASCADE"), nullable=False)
