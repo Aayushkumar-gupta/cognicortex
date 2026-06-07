@@ -39,19 +39,19 @@ def monitor_workflow_run(
     total_tasks = len(tasks)
 
     completed_tasks = sum(
-        1 for t in tasks if t.status == "completed"
+        1 for t in tasks if t.status == "SUCCESS"
     )
 
     running_tasks = sum(
-        1 for t in tasks if t.status == "running"
+        1 for t in tasks if t.status in ("RUNNING", "running")
     )
 
     failed_tasks = sum(
-        1 for t in tasks if t.status == "failed"
+        1 for t in tasks if t.status == "FAILED"
     )
 
     pending_tasks = sum(
-        1 for t in tasks if t.status == "pending"
+        1 for t in tasks if t.status in ("QUEUED", "queued", "pending")
     )
 
     task_details = []

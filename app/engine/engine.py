@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.db.models.workflow_run import WorkflowRun
 from app.db.models.task_run import TaskRun
 from sqlalchemy.orm import Session
@@ -47,3 +48,26 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
 
         if can_run:
             dispatch_task(db, workflow_run, step)
+
+    active_tasks_count = (
+        db.query(TaskRun)
+        .filter(
+            TaskRun.workflow_run_id == workflow_run.id,
+            TaskRun.status.in_(["QUEUED", "running"]) 
+        )
+        .count()
+    )
+
+    if active_tasks_count == 0:
+        failed_tasks_count = (
+            db.query(TaskRun)
+            .filter(
+                TaskRun.workflow_run_id == workflow_run.id,
+                TaskRun.status == "FAILED"
+            )
+            .count()
+        )
+        
+        workflow_run.status = "FAILED" if failed_tasks_count > 0 else "FINISHED"
+        workflow_run.finished_at = datetime.utcnow()
+        db.commit()
