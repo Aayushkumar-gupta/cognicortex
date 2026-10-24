@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from app.workers.workflow_executor import execute_workflow
 from app.db.models.workflow_run import WorkflowRun
-from app.db.models.task_run import TaskRun
 from sqlalchemy.orm import Session, joinedload
 from fastapi import Depends
 from app.db.session import get_db
 
 router = APIRouter(prefix="/workflow_runs", tags=['workflow_runs'])
+
 
 @router.post("")
 def run_workflow(workflow_id: int):

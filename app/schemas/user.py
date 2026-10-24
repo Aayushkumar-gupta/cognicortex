@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 
 
@@ -17,7 +17,6 @@ class UserCreate(UserBase):
 
 # What API returns (never return password!)
 class UserResponse(UserBase):
-    id: int
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True  # Pydantic v2 (replaces orm_mode)
+    id: int
