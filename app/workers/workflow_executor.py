@@ -1,28 +1,13 @@
 from app.workers.celery_app import celery_app
-from app.workflows.workflow_test import WORKFLOW
 from app.db.models.workflow_run import WorkflowRun
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from celery import chain
 from app.engine.engine import run_workflow_engine
 from app.db.models.workflow import Workflow
 from app.db.models.task_run import TaskRun
-from app.workflows.models import WorkflowStep
 
 
-@celery_app.task(name="mark_workflow_finished")
-def mark_workflow_finished(workflow_run_id: int):
-    db: Session = next(get_db())
-
-    workflow_run = db.query(WorkflowRun).filter_by(id = workflow_run_id).first()
-
-    if not workflow_run:
-        return
-    
-    workflow_run.status = "finished"
-    workflow_run.finished_at = datetime.utcnow()
-    db.commit()
 
 @celery_app.task(name="execute_workflow")
 def execute_workflow(workflow_id: int):

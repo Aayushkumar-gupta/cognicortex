@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException
 from app.workers.workflow_executor import execute_workflow
-from app.workflows.workflow_test import WORKFLOW
 from app.db.models.workflow_run import WorkflowRun
 from app.db.models.task_run import TaskRun
 from sqlalchemy.orm import Session, joinedload

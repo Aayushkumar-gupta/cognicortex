@@ -14,5 +14,4 @@ celery_app.conf.update(
 )
 
 # Task Imports
-import app.workers.tasks
 import app.workers.workflow_executor
