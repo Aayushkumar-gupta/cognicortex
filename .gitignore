@@ -21,3 +21,8 @@ venv/
 # Celery beat & logs
 celerybeat-schedule
 *.log
+
+# Tests and coverage
+.pytest_cache/
+.coverage
+htmlcov/

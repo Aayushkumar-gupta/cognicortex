@@ -8,12 +8,11 @@ from app.db.models.workflow import Workflow
 from app.db.models.task_run import TaskRun
 
 
-
 @celery_app.task(name="execute_workflow")
 def execute_workflow(workflow_id: int):
     db: Session = next(get_db())
 
-    workflow = db.query(Workflow).get(workflow_id)
+    workflow = db.get(Workflow, workflow_id)
     if not workflow:
         raise ValueError("Workflow not found")
 
@@ -30,11 +29,12 @@ def execute_workflow(workflow_id: int):
 
     run_workflow_engine(db, workflow_run.id)
 
+
 @celery_app.task(name="execute_step")
 def execute_step(task_run_id: int):
     db: Session = next(get_db())
 
-    task_run = db.query(TaskRun).get(task_run_id)
+    task_run = db.get(TaskRun, task_run_id)
     step = task_run.workflow_step
 
     try:
@@ -46,6 +46,7 @@ def execute_step(task_run_id: int):
     db.commit()
 
     run_workflow_engine(db, task_run.workflow_run_id)
+
 
 def execute_step_logic(step):
     step_type = step.step_type
