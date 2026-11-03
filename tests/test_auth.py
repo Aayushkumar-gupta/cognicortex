@@ -1,5 +1,3 @@
-import pytest
-
 NEW_USER = {
     "email": "new@example.com",
     "username": "newuser",
@@ -48,7 +46,6 @@ def test_protected_route_requires_token(client):
     assert response.status_code == 401
 
 
-@pytest.mark.xfail(reason="Known bug: duplicate signup raises a database error")
 def test_duplicate_signup_returns_conflict(client):
     client.post("/api/v1/users", json=NEW_USER)
 

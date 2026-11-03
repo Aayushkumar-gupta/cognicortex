@@ -1,5 +1,3 @@
-import pytest
-
 from app.db.models.task_run import TaskRun
 from app.db.models.workflow_run import WorkflowRun
 from app.db.session import SessionLocal
@@ -35,9 +33,10 @@ def create_workflow(client, headers, step_names, edges=()):
 
 
 def start_run(client, headers, workflow_id):
-    client.post(f"/api/v1/workflow_runs?workflow_id={workflow_id}", headers=headers)
-    with SessionLocal() as db:
-        return db.query(WorkflowRun).order_by(WorkflowRun.id.desc()).first().id
+    response = client.post(
+        f"/api/v1/workflow_runs?workflow_id={workflow_id}", headers=headers
+    )
+    return response.json()["workflow_run_id"]
 
 
 def load_run(run_id):
@@ -111,7 +110,6 @@ def test_monitor_reports_summary(client, auth_headers):
     assert body["summary"]["completed_tasks"] == 2
 
 
-@pytest.mark.xfail(reason="Known bug: starting a run does not return its id")
 def test_start_run_returns_run_id(client, auth_headers):
     workflow_id = create_workflow(client, auth_headers, ["A"])
 
@@ -119,10 +117,10 @@ def test_start_run_returns_run_id(client, auth_headers):
         f"/api/v1/workflow_runs?workflow_id={workflow_id}", headers=auth_headers
     )
 
+    assert response.status_code == 202
     assert "workflow_run_id" in response.json()
 
 
-@pytest.mark.xfail(reason="Known bug: run details need no login")
 def test_run_details_require_login(client, auth_headers):
     workflow_id = create_workflow(client, auth_headers, ["A"])
     run_id = start_run(client, auth_headers, workflow_id)
@@ -132,7 +130,16 @@ def test_run_details_require_login(client, auth_headers):
     assert response.status_code == 401
 
 
-@pytest.mark.xfail(reason="Known bug: any user can start any workflow")
+def test_other_user_cannot_see_run(client, auth_headers, register_and_login):
+    workflow_id = create_workflow(client, auth_headers, ["A"])
+    run_id = start_run(client, auth_headers, workflow_id)
+    other = register_and_login(email="other@example.com")
+
+    response = client.get(f"/api/v1/workflow_runs/{run_id}", headers=other)
+
+    assert response.status_code == 404
+
+
 def test_other_user_cannot_start_workflow(client, register_and_login):
     owner = register_and_login(email="owner@example.com")
     other = register_and_login(email="other@example.com")
@@ -145,7 +152,6 @@ def test_other_user_cannot_start_workflow(client, register_and_login):
     assert response.status_code == 404
 
 
-@pytest.mark.xfail(reason="Known bug: steps never record start and finish times")
 def test_step_durations_are_recorded(client, auth_headers):
     workflow_id = create_workflow(client, auth_headers, ["A"])
 
@@ -155,7 +161,6 @@ def test_step_durations_are_recorded(client, auth_headers):
     assert tasks["A"]["finished_at"] is not None
 
 
-@pytest.mark.xfail(reason="Known bug: a failed step does not store its error")
 def test_failed_step_records_error_message(client, auth_headers, monkeypatch):
     def always_fail(step):
         raise RuntimeError("step exploded")

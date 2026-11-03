@@ -1,51 +1,36 @@
-from app.workers.celery_app import celery_app
-from app.db.models.workflow_run import WorkflowRun
 from datetime import datetime
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.engine.engine import run_workflow_engine
-from app.db.models.workflow import Workflow
+
 from app.db.models.task_run import TaskRun
+from app.db.session import SessionLocal
+from app.engine.engine import run_workflow_engine
+from app.workers.celery_app import celery_app
 
 
 @celery_app.task(name="execute_workflow")
-def execute_workflow(workflow_id: int):
-    db: Session = next(get_db())
-
-    workflow = db.get(Workflow, workflow_id)
-    if not workflow:
-        raise ValueError("Workflow not found")
-
-    workflow_run = WorkflowRun(
-        workflow_id=workflow.id,
-        workflow_name=workflow.name,
-        status="RUNNING",
-        started_at=datetime.utcnow()
-    )
-
-    db.add(workflow_run)
-    db.commit()
-    db.refresh(workflow_run)
-
-    run_workflow_engine(db, workflow_run.id)
+def execute_workflow(workflow_run_id: int):
+    with SessionLocal() as db:
+        run_workflow_engine(db, workflow_run_id)
 
 
 @celery_app.task(name="execute_step")
 def execute_step(task_run_id: int):
-    db: Session = next(get_db())
+    with SessionLocal() as db:
+        task_run = db.get(TaskRun, task_run_id)
+        task_run.status = "RUNNING"
+        task_run.started_at = datetime.utcnow()
+        db.commit()
 
-    task_run = db.get(TaskRun, task_run_id)
-    step = task_run.workflow_step
+        try:
+            execute_step_logic(task_run.workflow_step)
+            task_run.status = "SUCCESS"
+        except Exception as exc:
+            task_run.status = "FAILED"
+            task_run.error_message = str(exc)
 
-    try:
-        execute_step_logic(step)
-        task_run.status = "SUCCESS"
-    except Exception:
-        task_run.status = "FAILED"
+        task_run.finished_at = datetime.utcnow()
+        db.commit()
 
-    db.commit()
-
-    run_workflow_engine(db, task_run.workflow_run_id)
+        run_workflow_engine(db, task_run.workflow_run_id)
 
 
 def execute_step_logic(step):

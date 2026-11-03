@@ -1,29 +1,65 @@
-from fastapi import APIRouter, HTTPException
-from app.workers.workflow_executor import execute_workflow
-from app.db.models.workflow_run import WorkflowRun
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
-from fastapi import Depends
+
+from app.core.security.jwt import get_current_user
+from app.db.models.user import User
+from app.db.models.workflow import Workflow
+from app.db.models.workflow_run import WorkflowRun
 from app.db.session import get_db
+from app.workers.workflow_executor import execute_workflow
 
 router = APIRouter(prefix="/workflow_runs", tags=['workflow_runs'])
 
 
-@router.post("")
-def run_workflow(workflow_id: int):
-    execute_workflow.delay(workflow_id)
-    return {"status": "workflow started"}
+@router.post("", status_code=status.HTTP_202_ACCEPTED)
+def run_workflow(
+    workflow_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    workflow = (
+        db.query(Workflow)
+        .filter(Workflow.id == workflow_id, Workflow.owner_id == current_user.id)
+        .first()
+    )
+
+    if not workflow:
+        raise HTTPException(
+            status_code=404,
+            detail="Workflow not found"
+        )
+
+    workflow_run = WorkflowRun(
+        workflow_id=workflow.id,
+        workflow_name=workflow.name,
+        status="RUNNING",
+        started_at=datetime.utcnow()
+    )
+    db.add(workflow_run)
+    db.commit()
+    db.refresh(workflow_run)
+
+    execute_workflow.delay(workflow_run.id)
+    return {"workflow_run_id": workflow_run.id, "status": workflow_run.status}
 
 
 @router.get("/{workflow_run_id}")
 def monitor_workflow_run(
     workflow_run_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     workflow_run = (
         db.query(WorkflowRun)
+        .join(WorkflowRun.workflow)
         .options(joinedload(WorkflowRun.task_runs))
-        .filter(WorkflowRun.id == workflow_run_id)
+        .filter(
+            WorkflowRun.id == workflow_run_id,
+            Workflow.owner_id == current_user.id
+        )
         .first()
     )
 
