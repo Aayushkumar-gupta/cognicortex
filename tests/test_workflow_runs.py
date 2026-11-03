@@ -1,8 +1,8 @@
 from app.db.models.task_run import TaskRun
 from app.db.models.workflow_run import WorkflowRun
+from app.db.models.workflow_step import WorkflowStep
 from app.db.session import SessionLocal
 from app.workers import workflow_executor
-from app.workflows.models import WorkflowStep
 
 
 def create_workflow(client, headers, step_names, edges=()):

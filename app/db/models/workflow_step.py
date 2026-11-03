@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, DateTime, JSON, ForeignKey
-from sqlalchemy.sql import func
-from app.db.session import Base
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
+from app.db.session import Base
+
 
 class WorkflowStep(Base):
     __tablename__ = "workflow_steps"
