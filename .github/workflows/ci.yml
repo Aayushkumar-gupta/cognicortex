@@ -27,7 +27,7 @@ jobs:
       TEST_DATABASE_URL: postgresql+psycopg://cognicortex:cognicortex@localhost:5432/cognicortex_test
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v6
         with:
@@ -45,6 +45,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - run: docker build .
