@@ -17,8 +17,8 @@ class TaskRun(Base):
     task_name = Column(String, nullable=False)
     status = Column(String, default="pending")
     error_message = Column(String, nullable=True)
-    started_at = Column(DateTime)
-    finished_at = Column(DateTime)
+    started_at = Column(DateTime(timezone=True))
+    finished_at = Column(DateTime(timezone=True))
 
     workflow_run = relationship("WorkflowRun", back_populates="task_runs")
     workflow_step = relationship("WorkflowStep")

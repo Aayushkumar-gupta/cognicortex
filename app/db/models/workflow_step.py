@@ -8,7 +8,7 @@ from app.db.session import Base
 class WorkflowStep(Base):
     __tablename__ = "workflow_steps"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     workflow_id = Column(
         Integer, ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
     )

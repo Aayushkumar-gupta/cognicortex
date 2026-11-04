@@ -8,7 +8,7 @@ from app.db.session import Base
 class Workflow(Base):
     __tablename__ = "workflows"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(String)
     owner_id = Column(Integer, nullable=False)

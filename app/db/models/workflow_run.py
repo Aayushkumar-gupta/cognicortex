@@ -13,8 +13,8 @@ class WorkflowRun(Base):
     )
     workflow_name = Column(String, nullable=False)
     status = Column(String, default="pending")
-    started_at = Column(DateTime)
-    finished_at = Column(DateTime)
+    started_at = Column(DateTime(timezone=True))
+    finished_at = Column(DateTime(timezone=True))
     workflow = relationship("Workflow", back_populates="workflow_runs")
     task_runs = relationship(
         "TaskRun", back_populates="workflow_run", cascade="all, delete-orphan"
