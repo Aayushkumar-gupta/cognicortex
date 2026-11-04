@@ -1,2 +1,4 @@
+from app.db.models import TaskRun, User, Workflow, WorkflowRun, WorkflowStep
 from app.db.session import Base
-from app.db.models.user import User  # noqa
+
+__all__ = ["Base", "TaskRun", "User", "Workflow", "WorkflowRun", "WorkflowStep"]

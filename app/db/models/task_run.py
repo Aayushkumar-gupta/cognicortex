@@ -1,14 +1,19 @@
-from app.db.session import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.db.session import Base
 
 
 class TaskRun(Base):
     __tablename__ = "task_runs"
 
     id = Column(Integer, primary_key=True)
-    workflow_run_id = Column(Integer, ForeignKey("workflow_runs.id", ondelete="CASCADE"), nullable=False)
-    workflow_step_id = Column(Integer, ForeignKey("workflow_steps.id", ondelete="CASCADE"), nullable=False)
+    workflow_run_id = Column(
+        Integer, ForeignKey("workflow_runs.id", ondelete="CASCADE"), nullable=False
+    )
+    workflow_step_id = Column(
+        Integer, ForeignKey("workflow_steps.id", ondelete="CASCADE"), nullable=False
+    )
     task_name = Column(String, nullable=False)
     status = Column(String, default="pending")
     error_message = Column(String, nullable=True)

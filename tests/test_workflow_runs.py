@@ -80,9 +80,7 @@ def test_step_waits_for_all_parents_and_runs_once(client, auth_headers):
     assert tasks["C"]["id"] > max(tasks["A"]["id"], tasks["B"]["id"])
 
 
-def test_failed_step_stops_downstream_and_fails_run(
-    client, auth_headers, monkeypatch
-):
+def test_failed_step_stops_downstream_and_fails_run(client, auth_headers, monkeypatch):
     def fail_on_a(step):
         if step.name == "A":
             raise RuntimeError("step A exploded")

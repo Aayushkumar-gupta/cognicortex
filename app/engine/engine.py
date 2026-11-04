@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.orm import Session
 
@@ -16,12 +16,11 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
     steps = workflow_run.workflow.steps
 
     for step in steps:
-
         existing_task = (
             db.query(TaskRun)
             .filter(
                 TaskRun.workflow_run_id == workflow_run.id,
-                TaskRun.workflow_step_id == step.id
+                TaskRun.workflow_step_id == step.id,
             )
             .first()
         )
@@ -33,13 +32,12 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
 
         for parent_step in steps:
             if parent_step.next_steps and step.id in parent_step.next_steps:
-
                 parent_task = (
                     db.query(TaskRun)
                     .filter(
                         TaskRun.workflow_run_id == workflow_run.id,
                         TaskRun.workflow_step_id == parent_step.id,
-                        TaskRun.status == "SUCCESS"
+                        TaskRun.status == "SUCCESS",
                     )
                     .first()
                 )
@@ -55,7 +53,7 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
         db.query(TaskRun)
         .filter(
             TaskRun.workflow_run_id == workflow_run.id,
-            TaskRun.status.in_(["QUEUED", "RUNNING"])
+            TaskRun.status.in_(["QUEUED", "RUNNING"]),
         )
         .count()
     )
@@ -64,12 +62,11 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
         failed_tasks_count = (
             db.query(TaskRun)
             .filter(
-                TaskRun.workflow_run_id == workflow_run.id,
-                TaskRun.status == "FAILED"
+                TaskRun.workflow_run_id == workflow_run.id, TaskRun.status == "FAILED"
             )
             .count()
         )
 
         workflow_run.status = "FAILED" if failed_tasks_count > 0 else "FINISHED"
-        workflow_run.finished_at = datetime.now(timezone.utc)
+        workflow_run.finished_at = datetime.now(UTC)
         db.commit()

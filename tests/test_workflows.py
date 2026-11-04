@@ -32,9 +32,9 @@ def test_list_shows_only_own_workflows(client, register_and_login):
 def test_other_users_workflow_is_not_found(client, register_and_login):
     owner = register_and_login(email="owner@example.com")
     other = register_and_login(email="other@example.com")
-    workflow_id = client.post(
-        "/api/v1/workflows", headers=owner, json=WORKFLOW
-    ).json()["id"]
+    workflow_id = client.post("/api/v1/workflows", headers=owner, json=WORKFLOW).json()[
+        "id"
+    ]
 
     response = client.get(f"/api/v1/workflows/{workflow_id}", headers=other)
 

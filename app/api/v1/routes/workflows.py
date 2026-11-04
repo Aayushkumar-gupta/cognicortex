@@ -15,7 +15,7 @@ router = APIRouter(prefix="/workflows", tags=["workflows"])
 def create_workflow(
     workflow: WorkflowCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     new_workflow = Workflow(
         name=workflow.name,
@@ -43,10 +43,11 @@ def create_workflow(
 
 @router.get("", response_model=list[WorkflowResponse])
 def list_workflow(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
-    workflow_list = db.query(Workflow).filter(Workflow.owner_id == current_user.id).all()
+    workflow_list = (
+        db.query(Workflow).filter(Workflow.owner_id == current_user.id).all()
+    )
 
     return workflow_list
 
@@ -55,7 +56,7 @@ def list_workflow(
 def get_workflow(
     workflow_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     workflow = (
         db.query(Workflow)
@@ -74,7 +75,7 @@ def update_workflow(
     workflow_id: int,
     workflow: WorkflowUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     workflow_to_update = (
         db.query(Workflow)
@@ -100,7 +101,7 @@ def update_workflow(
 def delete_workflow(
     workflow_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     workflow = (
         db.query(Workflow)

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict
 class WorkflowStepBase(BaseModel):
     name: str
     step_type: str
-    config: Dict[str, Any]
-    next_steps: Optional[List[int]] = None
+    config: dict[str, Any]
+    next_steps: list[int] | None = None
 
 
 class WorkflowStepCreate(WorkflowStepBase):
@@ -22,20 +22,20 @@ class WorkflowStepResponse(WorkflowStepBase):
 
 class WorkflowBase(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class WorkflowCreate(WorkflowBase):
-    steps: Optional[List[WorkflowStepCreate]] = []
+    steps: list[WorkflowStepCreate] | None = []
 
 
 class WorkflowResponse(WorkflowBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    steps: List[WorkflowStepResponse] = []
+    steps: list[WorkflowStepResponse] = []
 
 
 class WorkflowUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None

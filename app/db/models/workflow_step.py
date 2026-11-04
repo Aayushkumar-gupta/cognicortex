@@ -9,7 +9,9 @@ class WorkflowStep(Base):
     __tablename__ = "workflow_steps"
 
     id = Column(Integer, primary_key=True, index=True)
-    workflow_id = Column(Integer, ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False)
+    workflow_id = Column(
+        Integer, ForeignKey("workflows.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String, nullable=False)
     step_type = Column(String, nullable=False)
     config = Column(JSON, nullable=False)
