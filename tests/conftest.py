@@ -5,9 +5,12 @@ import tempfile
 
 # Settings are read once, when the app is first imported, so the test database
 # and secret key must be in the environment before any app module is imported.
+# TEST_DATABASE_URL runs the tests on another database, such as PostgreSQL in CI.
 _db_dir = tempfile.mkdtemp(prefix="cognicortex-tests-")
 atexit.register(shutil.rmtree, _db_dir, ignore_errors=True)
-os.environ["DATABASE_URL"] = f"sqlite:///{os.path.join(_db_dir, 'test.db')}"
+os.environ["DATABASE_URL"] = os.environ.get(
+    "TEST_DATABASE_URL", f"sqlite:///{os.path.join(_db_dir, 'test.db')}"
+)
 os.environ["SECRET_KEY"] = "test-secret-key-at-least-32-bytes-long"
 
 import pytest  # noqa: E402
