@@ -1,0 +1,55 @@
+x-app: &app
+  build: .
+  image: cognicortex
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+psycopg://cognicortex:cognicortex@db:5432/cognicortex
+    REDIS_URL: redis://redis:6379/0
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: cognicortex
+      POSTGRES_PASSWORD: cognicortex
+      POSTGRES_DB: cognicortex
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cognicortex"]
+      interval: 2s
+      retries: 15
+
+  redis:
+    image: redis:8
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      retries: 15
+
+  migrate:
+    <<: *app
+    command: alembic upgrade head
+
+  api:
+    <<: *app
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *app
+    command: celery -A app.workers.celery_app:celery_app worker --loglevel=info
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
