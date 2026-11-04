@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
@@ -71,5 +71,5 @@ def run_workflow_engine(db: Session, workflow_run_id: int):
         )
 
         workflow_run.status = "FAILED" if failed_tasks_count > 0 else "FINISHED"
-        workflow_run.finished_at = datetime.utcnow()
+        workflow_run.finished_at = datetime.now(timezone.utc)
         db.commit()

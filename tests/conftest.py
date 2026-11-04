@@ -8,7 +8,7 @@ import tempfile
 _db_dir = tempfile.mkdtemp(prefix="cognicortex-tests-")
 atexit.register(shutil.rmtree, _db_dir, ignore_errors=True)
 os.environ["DATABASE_URL"] = f"sqlite:///{os.path.join(_db_dir, 'test.db')}"
-os.environ["SECRET_KEY"] = "test-secret-key"
+os.environ["SECRET_KEY"] = "test-secret-key-at-least-32-bytes-long"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.models.task_run import TaskRun
 from app.db.session import SessionLocal
@@ -17,7 +17,7 @@ def execute_step(task_run_id: int):
     with SessionLocal() as db:
         task_run = db.get(TaskRun, task_run_id)
         task_run.status = "RUNNING"
-        task_run.started_at = datetime.utcnow()
+        task_run.started_at = datetime.now(timezone.utc)
         db.commit()
 
         try:
@@ -27,7 +27,7 @@ def execute_step(task_run_id: int):
             task_run.status = "FAILED"
             task_run.error_message = str(exc)
 
-        task_run.finished_at = datetime.utcnow()
+        task_run.finished_at = datetime.now(timezone.utc)
         db.commit()
 
         run_workflow_engine(db, task_run.workflow_run_id)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
@@ -35,7 +35,7 @@ def run_workflow(
         workflow_id=workflow.id,
         workflow_name=workflow.name,
         status="RUNNING",
-        started_at=datetime.utcnow()
+        started_at=datetime.now(timezone.utc)
     )
     db.add(workflow_run)
     db.commit()
