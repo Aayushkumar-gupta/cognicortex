@@ -1,9 +1,11 @@
 from celery import Celery
 
+from app.core.config import settings
+
 celery_app = Celery(
-    "cognicortrx",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
+    "cognicortex",
+    broker=settings.REDIS_URL,
+    backend=settings.REDIS_URL,
     include=["app.workers.workflow_executor"],
 )
 
