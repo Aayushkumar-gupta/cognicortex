@@ -24,15 +24,7 @@ Multi-step work should not hold up an API request. CogniCortex accepts a workflo
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    Client([Client]) -->|HTTP + JWT| API[FastAPI API]
-    API -->|queue run| Redis[(Redis)]
-    Redis -->|deliver tasks| Worker[Celery worker]
-    Worker -->|queue ready steps| Redis
-    API <-->|read and write| DB[(PostgreSQL)]
-    Worker <-->|record progress| DB
-```
+![Architecture: the client calls the FastAPI app, which queues runs in Redis for the Celery worker; the API and the worker share PostgreSQL](docs/architecture.png)
 
 The API and the workers are separate processes that share one database, and Redis carries jobs between them. A run moves through these stages:
 

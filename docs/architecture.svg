@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="690" viewBox="0 0 1000 690" font-family="-apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="690" fill="#ffffff"/>
+
+  <rect x="20" y="150" width="960" height="515" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="9 7"/>
+  <text x="956" y="186" text-anchor="end" font-size="19" font-weight="600" fill="#64748b">Docker Compose</text>
+
+  <g fill="none" stroke="#334155" stroke-width="2.5">
+    <path d="M165 112 V213" marker-end="url(#arrow)"/>
+    <path d="M280 300 H383" marker-end="url(#arrow)"/>
+    <path d="M615 272 H718" marker-end="url(#arrow)"/>
+    <path d="M720 328 H617" marker-end="url(#arrow)"/>
+    <path d="M165 397 V497" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+    <path d="M835 397 V497" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  </g>
+
+  <g font-size="19" fill="#475569">
+    <text x="181" y="140">REST + JWT</text>
+    <text x="332" y="288" text-anchor="middle">runs</text>
+    <text x="667" y="260" text-anchor="middle">tasks</text>
+    <text x="667" y="352" text-anchor="middle">next steps</text>
+    <text x="181" y="453">runs and status</text>
+    <text x="819" y="453" text-anchor="end">step results</text>
+  </g>
+
+  <g fill="#ffffff" stroke="#94a3b8" stroke-width="2">
+    <rect x="50" y="30" width="900" height="82" rx="12"/>
+    <rect x="50" y="215" width="230" height="180" rx="12"/>
+    <rect x="385" y="215" width="230" height="180" rx="12"/>
+    <rect x="720" y="215" width="230" height="180" rx="12"/>
+    <rect x="50" y="499" width="900" height="130" rx="12"/>
+  </g>
+
+  <g text-anchor="middle">
+    <text x="500" y="82" font-size="28" font-weight="700" fill="#0f172a">Client</text>
+
+    <text x="165" y="255" font-size="17" font-weight="700" letter-spacing="1.5" fill="#2563eb">API</text>
+    <text x="165" y="297" font-size="30" font-weight="700" fill="#0f172a">FastAPI</text>
+    <text x="165" y="336" font-size="19" fill="#475569">Auth, validation,</text>
+    <text x="165" y="362" font-size="19" fill="#475569">and run tracking</text>
+
+    <text x="500" y="255" font-size="17" font-weight="700" letter-spacing="1.5" fill="#2563eb">BROKER</text>
+    <text x="500" y="297" font-size="30" font-weight="700" fill="#0f172a">Redis</text>
+    <text x="500" y="336" font-size="19" fill="#475569">Carries jobs</text>
+    <text x="500" y="362" font-size="19" fill="#475569">between processes</text>
+
+    <text x="835" y="255" font-size="17" font-weight="700" letter-spacing="1.5" fill="#2563eb">WORKER</text>
+    <text x="835" y="297" font-size="30" font-weight="700" fill="#0f172a">Celery</text>
+    <text x="835" y="336" font-size="19" fill="#475569">Runs steps in</text>
+    <text x="835" y="362" font-size="19" fill="#475569">dependency order</text>
+
+    <text x="500" y="536" font-size="17" font-weight="700" letter-spacing="1.5" fill="#2563eb">DATABASE</text>
+    <text x="500" y="576" font-size="30" font-weight="700" fill="#0f172a">PostgreSQL</text>
+    <text x="500" y="608" font-size="19" fill="#475569">Users, workflows, runs, and step results</text>
+  </g>
+</svg>
